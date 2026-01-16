@@ -4,42 +4,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings Page</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined">
-    <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo.png') }}">
+    <title>Settings - PlantDetect</title>
 
-    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#21141f',
+                        secondary: '#aee36d',
+                    },
+                    fontFamily: {
+                        sans: ['Space Grotesk', 'Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo.png') }}">
 </head>
 
-<body>
-    <nav>
-        <ul>
-            <li>
-                Settings
-            </li>
-        </ul>
+<body class="min-h-screen bg-gray-50 font-sans">
+
+    <!-- Navigation -->
+    <nav class="bg-primary shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+            <a href="/" class="flex items-center space-x-3">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="h-12 w-12">
+                <span class="text-xl font-bold text-white">PlantDetect</span>
+            </a>
+            <a href="/leaf-detection" class="text-white/80 hover:text-secondary transition-colors">
+                ← Back to Detection
+            </a>
+        </div>
     </nav>
 
-    <main>
-        <h1 data-i18n="settings">Settings</h1>
-        <div>
-            <p>Selected language: {{ lang }}</p>
-            <select name="lang" id="lang">
-                <option value="en" {% if lang == 'en' %}selected{% endif %}>English</option>
-                <option value="ar" {% if lang == 'ar' %}selected{% endif %}>Arabic</option>
-            </select>
+    <div class="max-w-2xl mx-auto px-4 py-12">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Settings</h1>
+            <p class="text-gray-600">Customize your PlantDetect experience</p>
         </div>
-        <div class="total-visitors"></div>
-        <h2>Total Visitors</h2>
-        <p>Number of visitors: {{ visitor_count }}</p>
-        </div>
-        <a href="/leaf-detection"><p>leaf page</p></a>
-    </main>
 
-    <footer>
-        <p>&copy; 2024 Your Company</p>
+        <!-- Settings Card -->
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+
+            <!-- Language Setting -->
+            <form action="/settings" method="post" class="p-6 border-b">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="font-semibold text-gray-900 mb-1">
+                            <i class="fas fa-globe mr-2 text-secondary"></i>
+                            Language
+                        </h3>
+                        <p class="text-sm text-gray-500">Select your preferred language</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <select name="lang" id="lang"
+                            class="px-4 py-2 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary">
+                            <option value="en" {% if lang=='en' %}selected{% endif %}>English</option>
+                            <option value="ar" {% if lang=='ar' %}selected{% endif %}>العربية (Arabic)</option>
+                        </select>
+                        <button type="submit"
+                            class="px-4 py-2 bg-primary text-white font-medium rounded-lg hover:bg-secondary hover:text-primary transition-colors">
+                            Save
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Stats Section -->
+            <div class="p-6 border-b">
+                <h3 class="font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-chart-bar mr-2 text-secondary"></i>
+                    Statistics
+                </h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-gradient-to-br from-secondary/20 to-green-100 rounded-xl p-4 text-center">
+                        <div class="text-3xl font-bold text-primary">{{ visitor_count }}</div>
+                        <div class="text-sm text-gray-600">Total Page Views</div>
+                    </div>
+                    <div class="bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl p-4 text-center">
+                        <div class="text-3xl font-bold text-primary">{{ lang|upper }}</div>
+                        <div class="text-sm text-gray-600">Current Language</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- About Section -->
+            <div class="p-6">
+                <h3 class="font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-info-circle mr-2 text-secondary"></i>
+                    About
+                </h3>
+                <div class="space-y-3 text-sm text-gray-600">
+                    <div class="flex justify-between">
+                        <span>Version</span>
+                        <span class="font-medium text-gray-900">2.0.0</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Database</span>
+                        <span class="font-medium text-gray-900">MongoDB Atlas</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Framework</span>
+                        <span class="font-medium text-gray-900">Flask + Tailwind CSS</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="mt-8 grid grid-cols-2 gap-4">
+            <a href="/"
+                class="bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition-shadow flex items-center gap-3">
+                <div class="w-10 h-10 bg-secondary/20 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-home text-secondary"></i>
+                </div>
+                <span class="font-medium text-gray-900">Home</span>
+            </a>
+            <a href="/leaf-detection"
+                class="bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition-shadow flex items-center gap-3">
+                <div class="w-10 h-10 bg-secondary/20 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-search text-secondary"></i>
+                </div>
+                <span class="font-medium text-gray-900">Detection</span>
+            </a>
+            <a href="/login"
+                class="bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition-shadow flex items-center gap-3">
+                <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-sign-out-alt text-red-500"></i>
+                </div>
+                <span class="font-medium text-gray-900">Logout</span>
+            </a>
+            <a href="#"
+                class="bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition-shadow flex items-center gap-3">
+                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-question-circle text-blue-500"></i>
+                </div>
+                <span class="font-medium text-gray-900">Help</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-primary py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-white/60">©2024 PlantDetect. All rights reserved.</p>
+        </div>
     </footer>
-    <script src="{{ url_for('static', filename='translate.js') }}"></script>
 </body>
 
 </html>

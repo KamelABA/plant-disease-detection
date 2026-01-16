@@ -1,189 +1,255 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Admin - Dashboard</title>
-	<link href="{{ url_for('static', filename='admin/bootstrap.min.css') }}" rel="stylesheet">
-<link href="{{ url_for('static', filename='admin/font-awesome.min.css') }}" rel="stylesheet">
-<link href="{{ url_for('static', filename='admin/datepicker3.css') }}" rel="stylesheet">
-<link href="{{ url_for('static', filename='admin/styles.css') }}" rel="stylesheet">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Admin Dashboard - PlantDetect</title>
 
-<!--Custom Font-->
-<link href="https://fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+	<!-- Tailwind CSS CDN -->
+	<script src="https://cdn.tailwindcss.com"></script>
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						primary: '#21141f',
+						secondary: '#aee36d',
+					},
+					fontFamily: {
+						sans: ['Space Grotesk', 'Inter', 'sans-serif'],
+					}
+				}
+			}
+		}
+	</script>
 
-<!--[if lt IE 9]>
-<script src="{{ url_for('static', filename='js/html5shiv.js') }}"></script>
-<script src="{{ url_for('static', filename='js/respond.min.js') }}"></script>
-<![endif]-->
-
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
+	<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+		rel="stylesheet">
+	<link rel="shortcut icon" href="{{ url_for('static', filename='img/logo.png') }}">
 </head>
-<body>
-	<nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
-		<div class="container-fluid">
-			<div class="navbar-header">
-				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#sidebar-collapse"><span class="sr-only">Toggle navigation</span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span></button>
-				<a class="navbar-brand" href="#"><span></span>Admin</a>
-				<ul class="nav navbar-top-links navbar-right">
-					<li class="dropdown">
-						<a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
-							<em class="fa fa-envelope"></em><span class="label label-danger">!</span>
-						</a>
-						<ul class="dropdown-menu dropdown-messages">
-							{% for contact in contacts %}
-							<li>
-								<div class="dropdown-messages-box">
-									<a href="profile.html" class="pull-left">
-									</a>
-									<div class="message-body">
-										<a href="#"><strong>{{ contact[0] }}</strong> sent you a message</a>
-										<br /><small class="text-muted">{{ contact[1] }}</small>
-									</div>
-								</div>
-							</li>
-							{% endfor %}
-						</ul>
-					</li>
-				</ul>
-				
-			</div>
-		</div><!-- /.container-fluid -->
-	</nav>
-	<div id="sidebar-collapse" class="col-sm-3 col-lg-2 sidebar">
-		<div class="profile-sidebar">
-			<div class="profile-userpic">
-			</div>
-			<div class="profile-usertitle">
-				<div class="profile-usertitle-name">Dashboard</div>
-				<div class="profile-usertitle-status"><span class="indicator label-success"></span>Online</div>
-			</div>
-			<div class="clear"></div>
+
+<body class="min-h-screen bg-gray-100 font-sans">
+
+	<!-- Sidebar -->
+	<aside class="fixed left-0 top-0 h-full w-64 bg-primary shadow-xl z-50 transform transition-transform duration-300"
+		id="sidebar">
+		<!-- Logo -->
+		<div class="p-6 border-b border-white/10">
+			<a href="/" class="flex items-center space-x-3">
+				<img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="h-10 w-10">
+				<span class="text-xl font-bold text-white">PlantDetect</span>
+			</a>
 		</div>
-		<div class="divider"></div>
-		<ul class="nav menu">
-			<li class="active"><a href="/loginadmin"><em class="fa fa-dashboard">&nbsp;</em> Dashboard</a></li>
-			<li><a href="/users"><em class="fa fa-user">&nbsp;</em> users</a></li>
-			<li><a href="/diseaseinfo"><em class="fa fa-tint">&nbsp;</em> Diseases information</a></li>
-			<li><a href="/supplement" style="
-				left: -3px;
-			"><em class="fa fa-medkit"></em> Supplement</a></li>
-			<li>
-				<a href="#" id="delete-link" style="left: -3px;">
-					<em class="fa fa-trash">&nbsp;</em> Delete database
+
+		<!-- Admin Info -->
+		<div class="p-6 border-b border-white/10">
+			<div class="flex items-center space-x-3">
+				<div class="w-12 h-12 bg-secondary rounded-full flex items-center justify-center">
+					<i class="fas fa-user-shield text-primary text-xl"></i>
+				</div>
+				<div>
+					<p class="text-white font-semibold">Admin Panel</p>
+					<p class="text-green-400 text-sm flex items-center gap-1">
+						<span class="w-2 h-2 bg-green-400 rounded-full"></span>
+						Online
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- Navigation -->
+		<nav class="p-4">
+			<ul class="space-y-2">
+				<li>
+					<a href="/admin" class="flex items-center gap-3 px-4 py-3 bg-white/10 text-white rounded-lg">
+						<i class="fas fa-tachometer-alt"></i>
+						Dashboard
+					</a>
+				</li>
+				<li>
+					<a href="/users"
+						class="flex items-center gap-3 px-4 py-3 text-white/70 hover:bg-white/10 rounded-lg transition-colors">
+						<i class="fas fa-users"></i>
+						Users
+					</a>
+				</li>
+				<li>
+					<a href="/diseaseinfo"
+						class="flex items-center gap-3 px-4 py-3 text-white/70 hover:bg-white/10 rounded-lg transition-colors">
+						<i class="fas fa-virus"></i>
+						Disease Info
+					</a>
+				</li>
+				<li>
+					<a href="/supplement"
+						class="flex items-center gap-3 px-4 py-3 text-white/70 hover:bg-white/10 rounded-lg transition-colors">
+						<i class="fas fa-pills"></i>
+						Supplements
+					</a>
+				</li>
+				<li class="pt-4 border-t border-white/10 mt-4">
+					<a href="/"
+						class="flex items-center gap-3 px-4 py-3 text-white/70 hover:bg-white/10 rounded-lg transition-colors">
+						<i class="fas fa-home"></i>
+						Back to Site
+					</a>
+				</li>
+				<li>
+					<a href="/login"
+						class="flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors">
+						<i class="fas fa-sign-out-alt"></i>
+						Logout
+					</a>
+				</li>
+			</ul>
+		</nav>
+	</aside>
+
+	<!-- Main Content -->
+	<main class="ml-64 p-8">
+		<!-- Header -->
+		<div class="mb-8">
+			<h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
+			<nav class="text-sm text-gray-500 mt-2">
+				<a href="/" class="hover:text-secondary">Home</a>
+				<span class="mx-2">/</span>
+				<span class="text-gray-900">Dashboard</span>
+			</nav>
+		</div>
+
+		<!-- Stats Cards -->
+		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+			<div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-blue-500">
+				<div class="flex items-center justify-between">
+					<div>
+						<p class="text-gray-500 text-sm">Total Users</p>
+						<p class="text-3xl font-bold text-gray-900">{{ users or 0 }}</p>
+					</div>
+					<div class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center">
+						<i class="fas fa-users text-blue-500 text-2xl"></i>
+					</div>
+				</div>
+			</div>
+
+			<div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-green-500">
+				<div class="flex items-center justify-between">
+					<div>
+						<p class="text-gray-500 text-sm">Diseases</p>
+						<p class="text-3xl font-bold text-gray-900">{{ diseases or 25 }}</p>
+					</div>
+					<div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center">
+						<i class="fas fa-virus text-green-500 text-2xl"></i>
+					</div>
+				</div>
+			</div>
+
+			<div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-orange-500">
+				<div class="flex items-center justify-between">
+					<div>
+						<p class="text-gray-500 text-sm">Supplements</p>
+						<p class="text-3xl font-bold text-gray-900">{{ supplements or 20 }}</p>
+					</div>
+					<div class="w-14 h-14 bg-orange-100 rounded-full flex items-center justify-center">
+						<i class="fas fa-pills text-orange-500 text-2xl"></i>
+					</div>
+				</div>
+			</div>
+
+			<div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-purple-500">
+				<div class="flex items-center justify-between">
+					<div>
+						<p class="text-gray-500 text-sm">Detections</p>
+						<p class="text-3xl font-bold text-gray-900">{{ detections or 150 }}</p>
+					</div>
+					<div class="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center">
+						<i class="fas fa-search text-purple-500 text-2xl"></i>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Quick Actions -->
+		<div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+			<h2 class="text-xl font-bold text-gray-900 mb-6">Quick Actions</h2>
+			<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+				<a href="/users"
+					class="flex flex-col items-center p-4 bg-gray-50 rounded-xl hover:bg-blue-50 transition-colors">
+					<i class="fas fa-user-plus text-2xl text-blue-500 mb-2"></i>
+					<span class="text-sm text-gray-700">Manage Users</span>
 				</a>
-			</li>
-			
-			
-			
-			<li><a href="/admin"><em class="fa fa-power-off">&nbsp;</em> Logout</a></li>
-		</ul>
-	</div><!--/.sidebar-->
-		
-	<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
-		<div class="row">
-			<ol class="breadcrumb">
-				<li><a href="#">
-					<em class="fa fa-home"></em>
-				</a></li>
-				<li class="active">Dashboard</li>
-			</ol>
-		</div><!--/.row-->
-		
-		<div class="row">
-			<div class="col-lg-12">
-				<h1 class="page-header">Dashboard</h1>
+				<a href="/diseaseinfo"
+					class="flex flex-col items-center p-4 bg-gray-50 rounded-xl hover:bg-green-50 transition-colors">
+					<i class="fas fa-plus-circle text-2xl text-green-500 mb-2"></i>
+					<span class="text-sm text-gray-700">Add Disease</span>
+				</a>
+				<a href="/supplement"
+					class="flex flex-col items-center p-4 bg-gray-50 rounded-xl hover:bg-orange-50 transition-colors">
+					<i class="fas fa-medkit text-2xl text-orange-500 mb-2"></i>
+					<span class="text-sm text-gray-700">Supplements</span>
+				</a>
+				<a href="/settings"
+					class="flex flex-col items-center p-4 bg-gray-50 rounded-xl hover:bg-purple-50 transition-colors">
+					<i class="fas fa-cog text-2xl text-purple-500 mb-2"></i>
+					<span class="text-sm text-gray-700">Settings</span>
+				</a>
 			</div>
-		</div><!--/.row-->
-		
-		<div class="panel panel-container">
-			<div class="row">
-				<div class="col-xs-6 col-md-3 col-lg-3 no-padding">
-					<div class="panel panel-teal panel-widget border-right">
-						<div class="row no-padding"><em class="fa fa-xl fa-shopping-cart color-blue"></em>
-							<div class="large">{{ gerant }}</div>
-							<div class="text-muted">Mangers</div>
-						</div>
-					</div>
-				</div>
-				<div class="col-xs-6 col-md-3 col-lg-3 no-padding">
-					<div class="panel panel-blue panel-widget border-right">
-						<div class="row no-padding"><em class="fa fa-xl fa-comments color-orange"></em>
-							<div class="large">{{ eventandpub }}</div>
-							<div class="text-muted">Posts&Events</div>
-						</div>
-					</div>
-				</div>
-				<div class="col-xs-6 col-md-3 col-lg-3 no-padding">
-					<div class="panel panel-orange panel-widget border-right">
-						<div class="row no-padding"><em class="fa fa-xl fa-users color-teal"></em>
-							<div class="large">{{ users }}</div>
-							<div class="text-muted">Users</div>
-						</div>
-					</div>
-				</div>
-				<div class="col-xs-6 col-md-3 col-lg-3 no-padding">
-					<div class="panel panel-orange panel-widget border-right">
-						<div class="row no-padding"><em class="fa fa-xl fa-users color-teal"></em>
-							<div class="large">{{ donneandneed }}</div>
-							<div class="text-muted">blood Donation&Request</div>
-						</div>
-					</div>
-				</div>
-				
-			</div><!--/.row-->
 		</div>
-		
-		</div><!--/.row-->
-	</div>	<!--/.main-->
-	
-	<script src="{{ url_for('static', filename='js/admin/jquery-1.11.1.min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/admin/bootstrap.min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/admin/chart.min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/admin/chart-data.js') }}"></script>
-<script src="{{ url_for('static', filename='js/admin/easypiechart.js') }}"></script>
-<script src="{{ url_for('static', filename='js/admin/easypiechart-data.js') }}"></script>
-<script src="{{ url_for('static', filename='js/admin/bootstrap-datepicker.js') }}"></script>
-<script src="{{ url_for('static', filename='js/admin/custom.js') }}"></script>
+
+		<!-- System Info -->
+		<div class="bg-white rounded-2xl shadow-lg p-6">
+			<h2 class="text-xl font-bold text-gray-900 mb-6">System Information</h2>
+			<div class="grid md:grid-cols-2 gap-6">
+				<div class="space-y-4">
+					<div class="flex justify-between py-2 border-b">
+						<span class="text-gray-600">Database</span>
+						<span class="font-medium text-green-600">MongoDB Atlas ✓</span>
+					</div>
+					<div class="flex justify-between py-2 border-b">
+						<span class="text-gray-600">Framework</span>
+						<span class="font-medium">Flask 2.1.0</span>
+					</div>
+					<div class="flex justify-between py-2 border-b">
+						<span class="text-gray-600">Styling</span>
+						<span class="font-medium">Tailwind CSS 3.x</span>
+					</div>
+				</div>
+				<div class="space-y-4">
+					<div class="flex justify-between py-2 border-b">
+						<span class="text-gray-600">ML Framework</span>
+						<span class="font-medium">TensorFlow 2.7</span>
+					</div>
+					<div class="flex justify-between py-2 border-b">
+						<span class="text-gray-600">Status</span>
+						<span class="font-medium text-green-600 flex items-center gap-2">
+							<span class="w-2 h-2 bg-green-500 rounded-full"></span>
+							Operational
+						</span>
+					</div>
+					<div class="flex justify-between py-2 border-b">
+						<span class="text-gray-600">Version</span>
+						<span class="font-medium">2.0.0</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<!-- Mobile Menu Toggle -->
+	<button id="sidebar-toggle"
+		class="fixed bottom-4 right-4 lg:hidden w-14 h-14 bg-primary text-white rounded-full shadow-lg flex items-center justify-center z-50">
+		<i class="fas fa-bars text-xl"></i>
+	</button>
 
 	<script>
-		window.onload = function () {
-	var chart1 = document.getElementById("line-chart").getContext("2d");
-	window.myLine = new Chart(chart1).Line(lineChartData, {
-	responsive: true,
-	scaleLineColor: "rgba(0,0,0,.2)",
-	scaleGridLineColor: "rgba(0,0,0,.05)",
-	scaleFontColor: "#c5c7cc"
-	});
-};
-	</script>
- <script>
-	document.getElementById('delete-link').addEventListener('click', function(event) {
-		event.preventDefault(); // Prevent the default link behavior
-		showConfirmationDialog();
-	});
+		const sidebarToggle = document.getElementById('sidebar-toggle');
+		const sidebar = document.getElementById('sidebar');
 
-	function showConfirmationDialog() {
-		if (confirm("Are you sure you want to delete the database?")) {
-			fetch('/deletedatabase', {
-				method: 'GET'
-			}).then(response => {
-				if (response.redirected) {
-					window.location.href = response.url;
-				} else {
-					alert("Failed to delete the database.");
-				}
-			}).catch(error => {
-				console.error('Error:', error);
-				alert("An error occurred while deleting the database.");
-			});
-		} else {
-			alert("Action canceled.");
-		}
-	}
-</script>	
+		sidebarToggle.addEventListener('click', () => {
+			sidebar.classList.toggle('-translate-x-full');
+		});
+	</script>
 </body>
+
 </html>

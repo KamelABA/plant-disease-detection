@@ -4,41 +4,17 @@ import tensorflow as tf
 import numpy as np
 import datetime
 from keras.models import load_model
-from pymongo import MongoClient
-from bson.objectid import ObjectId
+import sqlite3
 import os
 import torch
-from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
 
 def calculate_mean(arr: np.ndarray) -> float:
     return np.mean(arr)
 
 
 app = Flask(__name__, template_folder='HtmlPage')
-app.secret_key = os.getenv('SECRET_KEY', 'your_secret_key')
-
-# MongoDB Atlas Connection
-MONGODB_URI = os.getenv('MONGODB_URI', 'mongodb+srv://kamelplants:kamelplants@cluster0.76lu2yk.mongodb.net/PlantDisease?retryWrites=true&w=majority&appName=Cluster0')
-
-try:
-    client = MongoClient(MONGODB_URI)
-    db = client['PlantDisease']
-    
-    # Collections (equivalent to SQLite tables)
-    users_collection = db['users']
-    disease_info_collection = db['DiseaseInformation']
-    supplement_collection = db['Supplement']
-    historique_collection = db['Historique']
-    
-    # Test connection
-    client.admin.command('ping')
-    print("✅ Successfully connected to MongoDB Atlas!")
-except Exception as e:
-    print(f"❌ Error connecting to MongoDB Atlas: {e}")
-    raise e
+app.secret_key = 'your_secret_key'
 
 COUNT = 0
 
@@ -61,6 +37,7 @@ def home():
 
 
 
+
 @app.route('/login')
 def Login():
      error = request.args.get('error')
@@ -74,16 +51,23 @@ def detect_plant():
         password = session['password']
         user_id = session['id']
         
+    conn = sqlite3.connect('PlantDisease.db')
+    c = conn.cursor()
+
     try:
-        # Check if the email and password exist in the users collection
-        user = users_collection.find_one({'email': email, 'password': password})
+        # Check if the email and hashed password exist in the users table
+        c.execute("SELECT * FROM users WHERE email=? AND password=?", (email, password))
+        user = c.fetchone()
     except Exception as e:
+        conn.close()
         return redirect(url_for('Login', error=str(e)))
+    
+    conn.close()
     
     if user:
         session['email'] = email
         session['password'] = password
-        session['id'] = str(user['_id'])
+        session['id'] = user[0]
         return redirect(url_for('leaf'))
     else:
         return redirect(url_for('Login', error='User not found or incorrect password.', email=email, password=password, id=user_id))
@@ -116,55 +100,71 @@ def admin():
 @app.route('/users')
 def users():
     try:
-        # Fetch all user data from MongoDB
-        users_data = list(users_collection.find({}, {'_id': 1, 'email': 1, 'password': 1}))
-        
-        # Convert to list of tuples for template compatibility
-        users_list = [(str(user['_id']), user.get('email', ''), user.get('password', '')) for user in users_data]
-        
-        return render_template('users.html', users=users_list)
+        # Connect to the database
+        conn = sqlite3.connect('PlantDisease.db')
+        cursor = conn.cursor()
+
+        # Fetch all gerant data from the database
+        cursor.execute("SELECT id, email, password FROM users")
+        users_data = cursor.fetchall()
+
+        conn.close()
+        # Render the template with the fetched data
+        return render_template('users.html', users=users_data)
     except Exception as e:
+        # Handle errors
         return str(e)
 
 
 @app.route('/supplement')
 def supplement():
     try:
-        # Fetch all supplement data from MongoDB
-        req_data = list(supplement_collection.find({}, {'_id': 1, 'disease_name': 1, 'supplementName': 1}))
-        
-        # Convert to list of tuples for template compatibility
-        req_list = [(str(item['_id']), item.get('disease_name', ''), item.get('supplementName', '')) for item in req_data]
-        
-        return render_template('supplement.html', req=req_list)
+        # Use a context manager for the database connection
+        with sqlite3.connect('PlantDisease.db') as conn:
+            cursor = conn.cursor()
+            # Fetch all supplement data from the database
+            cursor.execute(
+                'SELECT id, disease_name, supplementName FROM Supplement')
+            req_data = cursor.fetchall()
+        # Render the template with the fetched data
+        return render_template('supplement.html', req=req_data)
+
     except Exception as e:
+        # Handle errors (e.g., render an error template)
         return str(e)
 
 
 @app.route('/diseaseinfo')
 def diseaseinfo():
     try:
-        # Fetch all disease info from MongoDB
-        req_data = list(disease_info_collection.find({}, {'_id': 1, 'disease_name': 1, 'description': 1, 'PossibleSteps': 1}))
-        
-        # Convert to list of tuples for template compatibility
+        # Connect to the database
+        conn = sqlite3.connect('PlantDisease.db')
+        cursor = conn.cursor()
+
+        # Fetch all relevant data from the database
+        cursor.execute(
+            "SELECT id, disease_name, description, PossibleSteps FROM DiseaseInfromation")
+        req_data = cursor.fetchall()
+
+        # Close the database connection
+        conn.close()
+
+        # Handle encoding issues for the 'PossibleSteps' column
         cleaned_data = []
-        for item in req_data:
-            _id = str(item['_id'])
-            disease_name = item.get('disease_name', '')
-            description = item.get('description', '')
-            possible_steps = item.get('PossibleSteps', '')
-            
-            # Handle encoding issues
+        for row in req_data:
+            id, disease_name, description, possible_steps = row
             if isinstance(possible_steps, bytes):
                 possible_steps = possible_steps.decode('utf-8', 'replace')
             else:
-                possible_steps = str(possible_steps)
-                
-            cleaned_data.append((_id, disease_name, description, possible_steps))
+                possible_steps = str(possible_steps)  # Ensure it's a string
+            cleaned_data.append(
+                (id, disease_name, description, possible_steps))
 
+        # Render the template with the fetched and cleaned data
         return render_template('diseasesInfo.html', req=cleaned_data)
+
     except Exception as e:
+        # Handle errors
         return str(e)
 
 
@@ -177,22 +177,30 @@ def predict_crop(temp):
 
 
 def get_disease_info(disease_name):
-    result = disease_info_collection.find_one({'disease_name': disease_name})
-    
+    conn = sqlite3.connect('PlantDisease.db')
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT description, PossibleSteps FROM DiseaseInfromation WHERE disease_name = ?", (disease_name,))
+    result = cursor.fetchone()
+    conn.close()
     if result:
-        Description = result.get('description', 'No information available')
-        possiblesteps = result.get('PossibleSteps', 'No recommendations')
+        Description, possiblesteps = result
     else:
         Description, possiblesteps = "No information available", "No recommendations"
     return Description, possiblesteps
 
 
 def get_Supplement_info(disease_name):
-    result = supplement_collection.find_one({'disease_name': disease_name})
-    
+    conn = sqlite3.connect('PlantDisease.db')
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT SupplementName, SupplementImage FROM Supplement WHERE disease_name = ?", (disease_name,))
+    result = cursor.fetchone()
+    conn.close()
     if result:
-        SupplementName = result.get('SupplementName', result.get('supplementName', 'No information available'))
-        SupplementImage = result.get('SupplementImage', 'No recommendations')
+        SupplementName, SupplementImage = result
     else:
         SupplementName, SupplementImage = "No information available", "No recommendations"
     return SupplementName, SupplementImage
@@ -210,18 +218,26 @@ def adduser():
         password = request.form['password']
         name = request.form['name']
         try:
-            # Insert user into MongoDB
-            result = users_collection.insert_one({
-                'email': email,
-                'password': password,
-                'name': name,
-                'created_at': datetime.datetime.now()
-            })
-            
+            # Connect to SQLite database
+            conn = sqlite3.connect('PlantDisease.db')
+            cursor = conn.cursor()
+
+            # Insert data into User table
+            cursor.execute("INSERT INTO users (password, email, name) VALUES (?, ?, ?)",
+                       (password, email, name))
+
+            # Commit changes
+            conn.commit()
+
             return redirect(url_for('Login'))
         except Exception as e:
+            conn.rollback()
             error_message = f"Error occurred while inserting data: {e}. Details: {str(e)}"
             return error_message
+        finally:
+            # Close connection
+            if conn:
+                conn.close()
 
     return redirect(url_for('signup'))
 
@@ -231,15 +247,19 @@ def leaf():
     if 'email' in session and 'id' in session:
         email = session['email']
         user_id = session['id']
+        conn = sqlite3.connect('PlantDisease.db')
+        cursor = conn.cursor()
         
-        # Fetch the name from MongoDB
-        try:
-            user = users_collection.find_one({'_id': ObjectId(user_id)})
-            name = user.get('name', None) if user else None
-        except:
-            # If user_id is not a valid ObjectId, try email lookup
-            user = users_collection.find_one({'email': email})
-            name = user.get('name', None) if user else None
+        # Fetch the name from the users table
+        cursor.execute('SELECT name FROM users WHERE id = ?', (user_id,))
+        data = cursor.fetchone()  # Fetch a single row
+        
+        conn.close()
+
+        if data:
+            name = data[0]  # 'name' is the first and only column selected
+        else:
+            name = None  # Handle case when no data is returned
 
         return render_template('leaf-detection.html', name=name, email=email, id=user_id)
     else:
@@ -254,16 +274,24 @@ def checklogin():
     email = request.form['email']
     password = request.form['password']
     
+    # Connect to the SQLite database
+    conn = sqlite3.connect('PlantDisease.db')
+    c = conn.cursor()
+    
     try:
-        # Check if user exists in MongoDB
-        user = users_collection.find_one({'email': email, 'password': password})
+        # Check if the email and hashed password exist in the users table
+        c.execute("SELECT * FROM users WHERE email=? AND password=?", (email, password))
+        user = c.fetchone()
     except Exception as e:
+        conn.close()
         return redirect(url_for('Login', error=str(e)))
+    
+    conn.close()
     
     if user:
         session['email'] = email
         session['password'] = password
-        session['id'] = str(user['_id'])
+        session['id'] = user[0]
         return redirect(url_for('leaf'))
     else:
         return redirect(url_for('Login', error='User not found or incorrect password.'))
@@ -285,15 +313,33 @@ def preprocess_image(img_path):
     img_arr = img_arr.reshape(1, 224, 224, 3)
     return img_arr
 
-def store_prediction(user_id, disease_name, description, possiblesteps, supplement_name, current_date):
-    historique_collection.insert_one({
-        'iduser': user_id,
-        'DiseaseName': disease_name,
-        'Explanation': description,
-        'Recommendations': possiblesteps,
-        'Supplement': supplement_name,
-        'date': current_date
-    })
+def store_prediction(cursor, user_id, disease_name, description, possiblesteps, supplement_name, current_date):
+    cursor.execute(
+        'INSERT INTO Historique (iduser, DiseaseName, Explanation, Recommendations, Supplement, date) VALUES (?, ?, ?, ?, ?, ?)',
+        (user_id, disease_name, description, possiblesteps, supplement_name, current_date)
+    )
+
+def save_image(img, count):
+    img_path = f'static/img/{count}.jpg'
+    img.save(img_path)
+    if not os.path.exists(img_path):
+        raise ValueError("Image not saved correctly")
+    return img_path
+
+def preprocess_image(img_path):
+    img_arr = cv2.imread(img_path)
+    if img_arr is None:
+        raise ValueError("Image not read correctly")
+    img_arr = cv2.resize(img_arr, (224, 224))
+    img_arr = img_arr / 255.0
+    img_arr = img_arr.reshape(1, 224, 224, 3)
+    return img_arr
+
+def store_prediction(cursor, user_id, disease_name, description, possiblesteps, supplement_name, current_date):
+    cursor.execute(
+        'INSERT INTO Historique (iduser, DiseaseName, Explanation, Recommendations, Supplement, date) VALUES (?, ?, ?, ?, ?, ?)',
+        (user_id, disease_name, description, possiblesteps, supplement_name, current_date)
+    )
 
 def predict_disease(model, get_disease_func, endpoint):
     global COUNT
@@ -303,25 +349,32 @@ def predict_disease(model, get_disease_func, endpoint):
 
     current_date = datetime.datetime.now().strftime('%Y-%m-%d')
 
+    conn = None
     try:
         img_path = save_image(img, COUNT)
         img_arr = preprocess_image(img_path)
         predictions = model.predict(img_arr)
         
-        # Use .any() to check array is not empty
+        # استخدام .any() للتأكد من أن المصفوفة غير فارغة
         if predictions.size == 0:
             raise ValueError("No prediction could be made")
 
-        # Use np.argmax correctly to get prediction
+        # استخدام np.argmax بشكل صحيح للحصول على التنبؤ
         prediction = np.argmax(predictions, axis=1)[0]
         COUNT += 1
 
         disease_info = get_disease_func(prediction)
         disease_name, color, Description, possiblesteps, SupplementName, SupplementImage = disease_info
 
-        store_prediction(session['id'], disease_name, Description, possiblesteps, SupplementName, current_date)
+        conn = sqlite3.connect('PlantDisease.db', timeout=10)
+        cursor = conn.cursor()
+        store_prediction(cursor, session['id'], disease_name, Description, possiblesteps, SupplementName, current_date)
+        conn.commit()
     except Exception as e:
         return render_template('Error.html', message=str(e))
+    finally:
+        if conn:
+            conn.close()
 
     return render_template('Output.html', data=(disease_name, color), img_path=img_path, Description=Description, possiblesteps=possiblesteps, SupplementName=SupplementName, SupplementImage=SupplementImage)
 
@@ -344,7 +397,6 @@ def prediction_cotton():
 @app.route('/predictioncorn', methods=['POST'])
 def prediction_corn():
     return predict_disease(model_corn, get_corn_disease, 'corn')
-
 @app.route('/predictionapple', methods=['POST'])
 def prediction_apple():
     return predict_disease(model_Apple, get_apple_disease, 'Apple')
@@ -436,7 +488,6 @@ def get_tomato_disease(prediction):
             *get_disease_info("Tomato : Healthy"),
             *get_Supplement_info("Tomato : Healthy")
         ]
-
 def get_grape_disease(prediction):
     if prediction == 0:
         return[
@@ -466,7 +517,6 @@ def get_grape_disease(prediction):
             *get_disease_info("Grape : Healthy"),
             *get_Supplement_info("Grape : Healthy")
         ]
-
 def get_corn_disease(prediction):
     if prediction == 0:
         return[
@@ -483,7 +533,7 @@ def get_corn_disease(prediction):
         ]
     elif prediction ==2:
         return[
-            "Corn : Cercospora Leaf Spot | Gray Leaf Spot","red",
+            "Corn : Cercospora Leaf Spot | Gray Leaf Spot","red"
             *get_disease_info("Corn___Cercospora_leaf_spot Gray_leaf_spot"),
             *get_Supplement_info("Corn___Cercospora_leaf_spot Gray_leaf_spot")
 
@@ -499,34 +549,21 @@ def get_cotton_disease(prediction):
     if prediction ==0:
         return[
             "diseased cotton leaf","red",
-            "Cotton leaf disease detected. The leaf shows signs of infection.",
-            "Remove affected leaves, apply appropriate fungicide, ensure proper drainage.",
-            "Copper-based fungicide",
-            ""
+
         ]
     elif prediction ==1:
         return[
             "diseased cotton plant", "red",
-            "Cotton plant disease detected. The plant shows signs of infection.",
-            "Isolate affected plants, apply systemic fungicide, improve air circulation.",
-            "Systemic fungicide",
-            ""
+
         ]
     elif prediction ==2:
         return[
             "fresh cotton leaf","green",
-            "The cotton leaf is healthy with no signs of disease.",
-            "Continue regular care and monitoring.",
-            "No supplement needed",
-            ""
+
         ]
     else : 
          return[
             "fresh cotton plant","green",
-            "The cotton plant is healthy with no signs of disease.",
-            "Continue regular care and monitoring.",
-            "No supplement needed",
-            ""
         ]
     
 def get_apple_disease(prediction):
@@ -565,7 +602,7 @@ def get_visitor_ip():
     else:
         return request.environ['HTTP_X_FORWARDED_FOR']
 
-@app.route('/index')
+@app.route('/')
 def index():
     visitor_ip = get_visitor_ip()
     user_agent = request.headers.get('User-Agent')
@@ -581,3 +618,4 @@ def log_visitor_info(ip, user_agent):
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000, use_reloader=False)
+

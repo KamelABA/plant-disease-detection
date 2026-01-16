@@ -1,64 +1,211 @@
 <!DOCTYPE html>
-<!-- saved from url=(0545)https://auth.openai.com/authorize?client_id=TdJIcbe16WoTHtN95nyywh5E4yOo6ItG&scope=openid%20email%20profile%20offline_access%20model.request%20model.read%20organization.read%20organization.write&response_type=code&redirect_uri=https%3A%2F%2Fchatgpt.com%2Fapi%2Fauth%2Fcallback%2Flogin-web&audience=https%3A%2F%2Fapi.openai.com%2Fv1&device_id=4e73e953-10bf-4157-8502-cf1278d64e80&prompt=login&screen_hint=login&state=Qn1LJmEw2yQ9aL62bhJiA_UndCsFFLqs0MoUD2bjGs8&code_challenge=rM_PJHPp0xNbHVNvXJNgywIXXrMRGMczR1rnvghKxdg&code_challenge_method=S256 -->
 <html lang="en-US">
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Signup - PlantDetect</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='Login.css') }}">
+    <title>Sign Up - PlantDetect</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#21141f',
+                        secondary: '#aee36d',
+                        accent: '#3778FA',
+                    },
+                    fontFamily: {
+                        sans: ['Space Grotesk', 'Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Favicon -->
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo.png') }}">
 
-    
+    <style>
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-in {
+            animation: slideIn 0.5s ease-out forwards;
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+        }
+    </style>
 </head>
 
-<body>
-    <div id="root">
-        <div class="page-wrapper">
-            <header class="oai-header">
-                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="img-fluid"
-                    style="height: 80px;width: 80px;">
+<body
+    class="min-h-screen bg-gradient-to-br from-secondary via-green-300 to-secondary flex items-center justify-center p-4 font-sans">
 
-            </header>
-            <main class="main-container">
-                <section class="content-wrapper" style="
-                    top: -100px;
-                ">
-                    <div class="title-wrapper">
-                        <h1 class="title">Create an
-                            account
-                        </h1>
-                    </div>
-                    <form action="/adduser" method="post">
-                        <div class="login-container">
-                            <div class="input-wrapper">
-                                <input class="email-input" inputmode="email" type="email" id="email-input" name="email"
-                                    autocomplete="username" autocapitalize="none" spellcheck="false" required
-                                    placeholder=" ">
-                                <label class="email-label" for="email-input">Email address</label>
-                            </div>
-                            <div class="input-wrapper">
-                                <input class="email-input" inputmode="email" type="password" id="password-input"
-                                    name="password" autocomplete="current-password" autocapitalize="none"
-                                    spellcheck="false" required placeholder=" ">
-                                <label class="email-label" for="password-input">Password*</label>
-                            </div>
-                            <div class="input-wrapper">
-                                <input class="email-input" inputmode="email" type="name" id="name-input"
-                                    name="name" autocomplete="current-name" autocapitalize="none"
-                                    spellcheck="false" required placeholder=" ">
-                                <label class="email-label" for="name-input">name*</label>
-                            </div>
-                            <button type="submit" class="continue-btn">Continue</button>
-                        </div>
-                    </form>
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 opacity-20">
+        <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width=" 60" height="60"
+            viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" %3E%3Cg fill="none" fill-rule="evenodd" %3E%3Cg
+            fill="%2321141f" fill-opacity="0.2" %3E%3Cpath
+            d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"
+            /%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+    </div>
 
-                    <p class="other-page">Already have an account? <a class="other-page-link" href="/login">Login
-                        </a></p>
-                    <script>
+    <!-- Signup Card -->
+    <div class="relative w-full max-w-md">
+        <!-- Decorative Elements -->
+        <div class="absolute -top-10 -left-10 w-20 h-20 bg-primary rounded-full opacity-20 blur-2xl"></div>
+        <div class="absolute -bottom-10 -right-10 w-32 h-32 bg-primary rounded-full opacity-10 blur-3xl"></div>
 
-                    </script>
+        <div class="glass-effect rounded-3xl shadow-2xl p-8 md:p-10 slide-in">
+            <!-- Logo -->
+            <div class="flex justify-center mb-8">
+                <a href="/" class="flex flex-col items-center space-y-2 group">
+                    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="PlantDetect Logo"
+                        class="h-16 w-16 transition-transform duration-300 group-hover:scale-110">
+                    <span class="text-xl font-bold text-primary">PlantDetect</span>
+                </a>
+            </div>
+
+            <!-- Title -->
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Create an account</h1>
+                <p class="text-gray-500">Join us to start detecting plant diseases</p>
+            </div>
+
+            <!-- Signup Form -->
+            <form action="/adduser" method="post" class="space-y-5">
+                <!-- Name Input -->
+                <div class="relative">
+                    <input type="text" id="name-input" name="name" required
+                        class="peer w-full px-4 py-4 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder-transparent focus:outline-none focus:border-primary focus:bg-white transition-all duration-300"
+                        placeholder="Full name" autocomplete="name">
+                    <label for="name-input" class="absolute left-4 -top-2.5 bg-white px-2 text-sm text-gray-600 transition-all duration-300
+                                  peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4 peer-placeholder-shown:bg-transparent
+                                  peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-primary peer-focus:bg-white">
+                        Full Name
+                    </label>
+                </div>
+
+                <!-- Email Input -->
+                <div class="relative">
+                    <input type="email" id="email-input" name="email" required
+                        class="peer w-full px-4 py-4 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder-transparent focus:outline-none focus:border-primary focus:bg-white transition-all duration-300"
+                        placeholder="Email address" autocomplete="email">
+                    <label for="email-input" class="absolute left-4 -top-2.5 bg-white px-2 text-sm text-gray-600 transition-all duration-300
+                                  peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4 peer-placeholder-shown:bg-transparent
+                                  peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-primary peer-focus:bg-white">
+                        Email address
+                    </label>
+                </div>
+
+                <!-- Password Input -->
+                <div class="relative">
+                    <input type="password" id="password-input" name="password" required
+                        class="peer w-full px-4 py-4 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder-transparent focus:outline-none focus:border-primary focus:bg-white transition-all duration-300"
+                        placeholder="Password" autocomplete="new-password" minlength="6">
+                    <label for="password-input" class="absolute left-4 -top-2.5 bg-white px-2 text-sm text-gray-600 transition-all duration-300
+                                  peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4 peer-placeholder-shown:bg-transparent
+                                  peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-primary peer-focus:bg-white">
+                        Password
+                    </label>
+                </div>
+
+                <!-- Terms -->
+                <div class="flex items-start space-x-3">
+                    <input type="checkbox" id="terms" required
+                        class="w-4 h-4 mt-1 text-primary border-gray-300 rounded focus:ring-primary">
+                    <label for="terms" class="text-sm text-gray-600">
+                        I agree to the <a href="#" class="text-primary hover:text-secondary font-medium">Terms of
+                            Service</a>
+                        and <a href="#" class="text-primary hover:text-secondary font-medium">Privacy Policy</a>
+                    </label>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit"
+                    class="w-full py-4 bg-primary text-white font-semibold rounded-xl hover:bg-secondary hover:text-primary transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl">
+                    Create Account
+                </button>
+            </form>
+
+            <!-- Features List -->
+            <div class="mt-8 pt-6 border-t border-gray-200">
+                <p class="text-sm text-gray-500 text-center mb-4">What you'll get:</p>
+                <ul class="space-y-2">
+                    <li class="flex items-center space-x-2 text-sm text-gray-600">
+                        <svg class="w-5 h-5 text-secondary" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span>AI-powered disease detection</span>
+                    </li>
+                    <li class="flex items-center space-x-2 text-sm text-gray-600">
+                        <svg class="w-5 h-5 text-secondary" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span>Treatment recommendations</span>
+                    </li>
+                    <li class="flex items-center space-x-2 text-sm text-gray-600">
+                        <svg class="w-5 h-5 text-secondary" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span>Detection history tracking</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Divider -->
+            <div class="relative my-6">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-gray-200"></div>
+                </div>
+                <div class="relative flex justify-center text-sm">
+                    <span class="px-4 bg-white text-gray-500">or</span>
+                </div>
+            </div>
+
+            <!-- Login Link -->
+            <p class="text-center text-gray-600">
+                Already have an account?
+                <a href="/login" class="text-primary hover:text-secondary font-semibold transition-colors">
+                    Login
+                </a>
+            </p>
+        </div>
+
+        <!-- Back to Home -->
+        <div class="text-center mt-6">
+            <a href="/" class="text-primary/70 hover:text-primary transition-colors text-sm">
+                ← Back to Home
+            </a>
+        </div>
+    </div>
 </body>
 
 </html>

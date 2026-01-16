@@ -1,390 +1,385 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>Plants Diseases Website ynae - leaf Detection</title>
-
-    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='responsive-mobile.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='responsive-tablet.css') }}">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <title>Leaf Detection - PlantDetect</title>
+    <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1" name="viewport">
-    <style>
-        /*
+    <meta name="description" content="Detect plant diseases with our AI-powered system">
 
-    Note: For display flex to work, you have to add 
-    
-    .your-class-name{
-      display:flex;
-    }
-    
-    .your-class-name > div {
-      position: static !important;
-    }
-    
-    */
-
-        /* place css code */
-    </style>
-    <link rel="stylesheet" type="text/css"
-        href="https://fonts.googleapis.com/css?family=Nunito Sans:100,200,300,400,500,600,700,800,900">
-    <link rel="stylesheet" type="text/css"
-        href="https://fonts.googleapis.com/css?family=Noto Sans TC:100,200,300,400,500,600,700,800,900">
-    <link rel="stylesheet" type="text/css"
-        href="https://fonts.googleapis.com/css?family=Kumbh Sans:100,200,300,400,500,600,700,800,900">
-    <link rel="stylesheet" type="text/css"
-        href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900">
-    <link rel="stylesheet" type="text/css"
-        href="https://fonts.googleapis.com/css?family=Inter:100,200,300,400,500,600,700,800,900">
-    <link rel="stylesheet" type="text/css"
-        href="https://fonts.googleapis.com/css?family=Manrope:100,200,300,400,500,600,700,800,900">
-    <link rel="stylesheet" type="text/css"
-        href="https://fonts.googleapis.com/css?family=Open Sans:100,200,300,400,500,600,700,800,900">
-    <link rel="stylesheet" type="text/css"
-        href="https://fonts.googleapis.com/css?family=Space Grotesk:100,200,300,400,500,600,700,800,900">
-    <link rel="stylesheet" type="text/css"
-        href="https://fonts.googleapis.com/css?family=Heebo:100,200,300,400,500,600,700,800,900">
-    <link rel="stylesheet" type="text/css"
-        href="https://fonts.googleapis.com/css?family=Arimo:100,200,300,400,500,600,700,800,900">
-        <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo.png') }}">
-
-
-</head>
-
-<body class="_leaf-detection_container">
-    <div id="welcome-alert" class="alert alert-success" role="alert">
-        Welcome, {{ name }}!
-    </div>
-
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
-
-        setTimeout(function () {
-            var alertDiv = document.getElementById('welcome-alert');
-            alertDiv.style.transition = 'opacity 1s ease'; // Optional: Add a fade-out effect
-            alertDiv.style.opacity = '0';
-            setTimeout(function () {
-                alertDiv.remove();
-            }, 1000);
-        }, 3000);
-    </script>
-    <div class="leaf-detection-elem-65">
-
-        <nav class="navbar navbar-expand-lg leaf-detection-elem-61">
-            <a class="navbar-brand" href="/">
-                <span class="home-elem-3">
-                    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="img-fluid"
-                        style="height: 80px;width: 80px;">
-                    <p>PlantDetect</p>
-                </span>
-            </a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse leaf-detection-elem-58" id="navbarNav" style="left: -90px;">
-                <ul class="navbar-nav leaf-detection-elem-544">
-
-                    <li class="nav-item">
-                        <button class="navbar-item leaf-detection-elem-59" id="detectPlantButton" style="
-                        margin-left: 0px;
-                        left: 50px;
-                        top: 10px;
-                    ">Contact Us</button>
-                    </li>
-                </ul>
-
-            </div>
-            <div class="dropdown-container">
-                <!-- dropdown f class dirou -->
-                <details class="right dropdown">
-                    <summary class="avatar">
-                        <img src="https://gravatar.com/avatar/00000000000000000000000000000000?d=mp">
-                    </summary>
-                    <ul>
-
-                        <li>
-                            <p>
-                                <span class="block italic">{{ email }}</span>
-                            </p>
-                        </li>
-                        <li>
-                            <span onclick="toggleNav()">
-
-                                <a href="#DivbMUA">Historique</a>
-                            </span>
-                        </li>
-                        <li>
-                            <a href="/settings">
-                                <span class="material-symbols-outlined"></span> Settings
-                            </a>
-                        </li>
-
-                        <li class="divider"></li>
-                        <li>
-                            <a href="/login">
-                                <span class="material-symbols-outlined"></span> Logout
-                            </a>
-                        </li>
-                        <li>
-                            <p>Selected language: {{ lang }}</p>
-                            <select id="lang">
-                                <option value="en" selected>English</option>
-                                <option value="ar">Arabic</option>
-                            </select>
-                        </li>
-                    </ul>
-
-                </details>
-            </div>
-            <div id="mySidenav" class="sidenav">
-                <a href="javascript:void(0)" class="closebtn" onclick="toggleNav()">&times;</a>
-                <p style="color: aliceblue;">Today</p>
-                {% for disease in data if disease[1] == '2024-05-24' %}
-                <a href="#" style="color: aliceblue;">{{ disease[0] }}</a>
-                {% endfor %}
-                <p style="color: aliceblue;">Yesterday</p>
-                {% for disease in data if disease[1] == '2024-05-23' %}
-                <a href="#" style="color: aliceblue;">{{ disease[0] }}</a>
-                {% endfor %}
-                <br style="color: aliceblue;">
-                <p style="color: aliceblue;">Previous 30 Days</p>
-                {% if not data %}
-                <p style="color: aliceblue;">No data available.</p>
-                {% endif %}
-            </div>
-
-
-
-
-
-        </nav>
-        <div class="leaf-detection-elem-64">
-            <span class="leaf-detection-elem-62">
-                <p data-i18n="detect">Detect your plant Disease</p>
-            </span>
-            <span class="leaf-detection-elem-63" data-i18n="act">Act promptly to identify plant diseases and take the
-                necessary
-                steps to guarantee that your garden not only survives but thrives in its full glory. Embark on your
-                gardening journey now.
-            </span>
-        </div>
-    </div>
-    <div class="leaf-detection-elem-5">
-        <span class="leaf-detection-elem-1">
-            <img src="{{ url_for('static', filename='assets/imanzwhhopu9upakayo3.jpg') }}">
-        </span>
-        <div class="leaf-detection-elem-4">
-            <span class="leaf-detection-elem-2">
-                <p>Efficient Tomato Disease Detection Feature </p>
-            </span><span class="leaf-detection-elem-3">
-                <p>Our AI solution assists in detecting tomato diseases promptly, saving your crops from destructive
-                    issues and ensuring good yield. </p>
-            </span>
-            <a href="/tomato">
-                <button class="leaf-detection-elem-11" style="border-radius: 20px;">
-
-                    <p style="
-                    margin-bottom: 0px;
-                ">Detect</p>
-
-                </button>
-
-            </a>
-        </div>
-    </div>
-    <hr>
-    <div class="leaf-detection-elem-10">
-        <div class="leaf-detection-elem-9">
-            <span class="leaf-detection-elem-7">
-                <p>Innovative Corn and Maize Disease Detector </p>
-            </span>
-            <span class="leaf-detection-elem-8">
-                <p>Our feature detects corn and maize diseases in early stages, allowing immediate action and greatly
-                    reducing harvest loss. </p>
-            </span>
-            <a href="/corn">
-                <button class="leaf-detection-elem-12" style="border-radius: 20px;">
-                    <p style="
-                    margin-bottom: 0px;
-                ">Detect</p>
-                </button>
-            </a>
-        </div>
-        <span class="leaf-detection-elem-6">
-            <img src="{{ url_for('static', filename='assets/vxjtxmyrivdznssyz0rw.jpg') }}">
-        </span>
-    </div>
-    <hr>
-    <div class="leaf-detection-elem-18">
-        <span class="leaf-detection-elem-13">
-            <img
-                src="{{ url_for('static', filename='assets/gautam-arora-ovdtguhupby-unsplashouck_1704366723_37412.jpg') }}">
-        </span>
-        <div class="leaf-detection-elem-17"> <span class="leaf-detection-elem-14">
-                <p>Innovative Cotton Disease Detector </p>
-            </span><span class="leaf-detection-elem-15">
-                <p>Our AI solution assists in detecting cotton diseases promptly, saving your crops from destructive
-                    issues and ensuring good yield. </p>
-            </span>
-            <a href="/cotton">
-                <button class="leaf-detection-elem-16" style="border-radius: 20px;">
-
-                    <p style="
-                    margin-bottom: 0px;
-                ">Detect</p>
-
-                </button>
-            </a>
-        </div>
-    </div>
-    <hr>
-    <div class="leaf-detection-elem-24">
-        <div class="leaf-detection-elem-23"> <span class="leaf-detection-elem-20">
-                <p>Innovative grape Disease Detector </p>
-            </span><span class="leaf-detection-elem-21">
-                <p>Our feature detects grape diseases in early stages, allowing immediate action and greatly reducing
-                    harvest loss. </p>
-            </span>
-            <a href="/grape">
-                <button class="leaf-detection-elem-22" style="border-radius: 20px;">
-                    <p style="
-                    margin-bottom: 0px;
-                ">Detect</p>
-                </button>
-            </a>
-        </div>
-        <span class="leaf-detection-elem-19">
-            <img
-                src="{{ url_for('static', filename='assets/gautam-arora-ovdtguhupby-unsplash9whr_1704366838_39014.jpg') }}">
-        </span>
-    </div>
-    <hr>
-    <div class="leaf-detection-elem-30"> <span class="leaf-detection-elem-25"> <img
-                src="{{ url_for('static', filename='assets/gautam-arora-ovdtguhupby-unsplasha2le_1704366921_56524.jpg') }}">
-        </span>
-        <div class="leaf-detection-elem-29"> <span class="leaf-detection-elem-26">
-
-                <p>Efficient Potato Disease Detection Feature </p>
-            </span><span class="leaf-detection-elem-27">
-                <p>Our AI solution assists in detecting potato diseases promptly, saving your crops from destructive
-                    issues and ensuring good yield. </p>
-            </span>
-            <a href="\potato">
-                <button class="leaf-detection-elem-28" style="border-radius: 20px;">
-
-                    <p style="
-                    margin-bottom: 0px;
-                ">Detect</p>
-
-                </button>
-            </a>
-        </div>
-
-
-    </div>
-    <hr>
-    <!-- <div class="leaf-detection-elem-24">
-        <div class="leaf-detection-elem-23"> <span class="leaf-detection-elem-20">
-                <p>Other leafs Disease Detector</p>
-            </span><span class="leaf-detection-elem-21">
-                <p>Our feature detects any leafs diseases in early stages, allowing immediate action and greatly
-                    reducing
-                    harvest loss. </p>
-            </span>
-            <a href="/Apple">
-                <button class="leaf-detection-elem-22" style="border-radius: 20px;">
-                    <p style="
-                    margin-bottom: 0px;
-                ">Detect</p>
-                </button>
-            </a>
-        </div>
-        <span class="leaf-detection-elem-19">
-            <img
-                src="{{ url_for('static', filename='assets/gautam-arora-ovdtguhupby-unsplash9whr_1704366838_39014.jpg') }}">
-        </span>
-    </div> -->
-    <hr>
-    <div class="leaf-detection-elem-52">
-        <div class="leaf-detection-elem-36">
-            <div class="leaf-detection-elem-35"> <span class="leaf-detection-elem-31">
-                    <p>Try PlantCheck Today </p>
-                </span>
-                <div class="leaf-detection-elem-34"> <span class="leaf-detection-elem-32">
-                        <p>Join us and ensure your garden's health. Every plant deserves the best care. </p>
-                    </span><button class="leaf-detection-elem-33">
-                        <p>Join Now </p>
-                    </button></div>
-            </div>
-        </div>
-        <div class="leaf-detection-elem-49">
-            <div class="leaf-detection-elem-39"> <span class="leaf-detection-elem-37">
-                    <p>PlantCheck </p>
-                </span><span class="leaf-detection-elem-38">
-                    <p>Helping home gardeners and professional growers prevent plant diseases. </p>
-                </span></div>
-            <div class="leaf-detection-elem-48">
-                <div class="leaf-detection-elem-43"> <span class="leaf-detection-elem-40">
-                        <a href="#DivbMUA" class="link" target="_self">
-                            <p>About Us </p>
-                        </a> </span><span class="leaf-detection-elem-41">
-                        <p>FAQ </p>
-                    </span><span class="leaf-detection-elem-42"><a href="#DivNr7R" class="link" target="_self">
-                            <p>Pricing </p>
-                        </a> </span></div>
-                <div class="leaf-detection-elem-47"> <span class="leaf-detection-elem-44">
-                        <p>Twitter</p>
-                    </span><span class="leaf-detection-elem-45">
-                        <p>Facebook</p>
-                    </span><span class="leaf-detection-elem-46">
-                        <p>Instagram</p>
-                    </span></div>
-            </div>
-        </div>
-        <div class="leaf-detection-elem-51"> <span class="leaf-detection-elem-50">
-                <p>©2023 PlantCheck. All rights reserved. </p>
-            </span></div>
-    </div>
-    <script>
-        function closeOpenDropdowns(e) {
-            let openDropdownEls = document.querySelectorAll("details.dropdown[open]");
-
-            if (openDropdownEls.length > 0) {
-                // If we're clicking anywhere but the summary element, close dropdowns
-                if (e.target.parentElement.nodeName.toUpperCase() !== "SUMMARY") {
-                    openDropdownEls.forEach((dropdown) => {
-                        dropdown.removeAttribute("open");
-                    });
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#21141f',
+                        secondary: '#aee36d',
+                        accent: '#3778FA',
+                    },
+                    fontFamily: {
+                        sans: ['Space Grotesk', 'Inter', 'sans-serif'],
+                    }
                 }
             }
         }
-
-        document.addEventListener("click", closeOpenDropdowns);
     </script>
-    <script>
-        function toggleNav() {
-            var sidenav = document.getElementById("mySidenav");
-            var main = document.getElementById("main");
-            var isOpen = sidenav.style.width === "250px";
 
-            if (isOpen) {
-                sidenav.style.width = "0";
-                main.style.marginLeft = "0";
-                document.body.style.backgroundColor = "white";
-            } else {
-                sidenav.style.width = "250px";
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
 
-            }
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo.png') }}">
+
+    <style>
+        .plant-card {
+            transition: all 0.3s ease;
         }
 
-    </script>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="{{ url_for('static', filename='translate.js') }}"></script>
+        .plant-card:hover {
+            transform: translateY(-5px);
+        }
 
+        .sidenav {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 100;
+            top: 0;
+            left: 0;
+            background-color: #21141f;
+            overflow-x: hidden;
+            transition: 0.3s;
+            padding-top: 60px;
+        }
+
+        .sidenav a,
+        .sidenav p {
+            padding: 8px 8px 8px 32px;
+            text-decoration: none;
+            font-size: 16px;
+            display: block;
+            transition: 0.3s;
+        }
+
+        .sidenav .closebtn {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+            color: white;
+        }
+    </style>
+</head>
+
+<body class="font-sans antialiased bg-gray-50">
+
+    <!-- Welcome Alert -->
+    <div id="welcome-alert"
+        class="fixed top-4 right-4 z-50 flex items-center p-4 bg-green-100 border-l-4 border-green-500 rounded-lg shadow-lg">
+        <svg class="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clip-rule="evenodd" />
+        </svg>
+        <span class="text-green-700 font-medium">Welcome, {{ name }}!</span>
+    </div>
+    <script>
+        setTimeout(function () {
+            var alertDiv = document.getElementById('welcome-alert');
+            alertDiv.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            alertDiv.style.opacity = '0';
+            alertDiv.style.transform = 'translateX(100%)';
+            setTimeout(function () {
+                alertDiv.remove();
+            }, 500);
+        }, 3000);
+    </script>
+
+    <!-- Side Navigation -->
+    <div id="mySidenav" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn text-white" onclick="toggleNav()">&times;</a>
+        <p class="text-secondary font-bold">Today</p>
+        {% for disease in data if disease[1] == '2024-05-24' %}
+        <a href="#" class="text-white hover:text-secondary">{{ disease[0] }}</a>
+        {% endfor %}
+        <p class="text-secondary font-bold mt-4">Yesterday</p>
+        {% for disease in data if disease[1] == '2024-05-23' %}
+        <a href="#" class="text-white hover:text-secondary">{{ disease[0] }}</a>
+        {% endfor %}
+        <p class="text-secondary font-bold mt-4">Previous 30 Days</p>
+        {% if not data %}
+        <p class="text-gray-400">No data available.</p>
+        {% endif %}
+    </div>
+
+    <!-- Hero Section -->
+    <div class="relative bg-gradient-to-br from-primary via-gray-900 to-primary min-h-[50vh] flex flex-col">
+        <!-- Navigation -->
+        <nav class="relative z-50 px-4 py-4 lg:px-8">
+            <div class="max-w-7xl mx-auto flex items-center justify-between">
+                <!-- Logo -->
+                <a href="/" class="flex items-center space-x-3 group">
+                    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="PlantDetect Logo"
+                        class="h-14 w-14 transition-transform duration-300 group-hover:scale-110">
+                    <span class="text-xl font-bold text-white">PlantDetect</span>
+                </a>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="/" class="text-white/80 hover:text-secondary transition-colors">Home</a>
+                    <button
+                        class="px-6 py-2 bg-secondary text-primary font-semibold rounded-full hover:bg-white transition-all duration-300">
+                        Contact Us
+                    </button>
+
+                    <!-- User Dropdown -->
+                    <div class="relative">
+                        <button id="user-menu-btn" class="flex items-center space-x-2">
+                            <img src="https://gravatar.com/avatar/00000000000000000000000000000000?d=mp" alt="User"
+                                class="w-10 h-10 rounded-full ring-2 ring-secondary">
+                        </button>
+                        <div id="user-menu"
+                            class="hidden absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl py-2 z-50">
+                            <div class="px-4 py-3 border-b">
+                                <p class="text-sm text-gray-500">Signed in as</p>
+                                <p class="text-sm font-medium text-gray-900 truncate">{{ email }}</p>
+                            </div>
+                            <a href="#" onclick="toggleNav()" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                <i class="fas fa-history mr-2"></i> History
+                            </a>
+                            <a href="/settings" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                <i class="fas fa-cog mr-2"></i> Settings
+                            </a>
+                            <div class="border-t my-1"></div>
+                            <a href="/login" class="block px-4 py-2 text-red-600 hover:bg-gray-100">
+                                <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="md:hidden text-white p-2">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Hero Content -->
+        <div class="flex-1 flex flex-col items-center justify-center px-4 text-center py-12">
+            <h1 class="text-3xl md:text-5xl font-bold text-white mb-4 max-w-3xl">
+                Detect your plant Disease
+            </h1>
+            <p class="text-lg text-white/70 max-w-2xl">
+                Act promptly to identify plant diseases and take the necessary steps to guarantee
+                that your garden not only survives but thrives in its full glory.
+            </p>
+        </div>
+    </div>
+
+    <!-- Plant Detection Cards -->
+    <div class="max-w-7xl mx-auto px-4 py-16 space-y-8">
+
+        <!-- Tomato Card -->
+        <div class="plant-card bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col lg:flex-row">
+            <div class="lg:w-2/5">
+                <img src="{{ url_for('static', filename='assets/imanzwhhopu9upakayo3.jpg') }}" alt="Tomato"
+                    class="w-full h-64 lg:h-full object-cover">
+            </div>
+            <div class="lg:w-3/5 p-8 flex flex-col justify-center">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-4xl">🍅</span>
+                    <h2 class="text-2xl font-bold text-gray-900">Efficient Tomato Disease Detection</h2>
+                </div>
+                <p class="text-gray-600 mb-6">
+                    Our AI solution assists in detecting tomato diseases promptly, saving your crops from
+                    destructive issues and ensuring good yield.
+                </p>
+                <a href="/tomato"
+                    class="inline-flex items-center justify-center w-fit px-8 py-3 bg-red-500 text-white font-semibold rounded-full hover:bg-red-600 transition-all duration-300 transform hover:scale-105">
+                    Detect Tomato Disease →
+                </a>
+            </div>
+        </div>
+
+        <!-- Corn Card -->
+        <div class="plant-card bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col lg:flex-row-reverse">
+            <div class="lg:w-2/5">
+                <img src="{{ url_for('static', filename='assets/vxjtxmyrivdznssyz0rw.jpg') }}" alt="Corn"
+                    class="w-full h-64 lg:h-full object-cover">
+            </div>
+            <div class="lg:w-3/5 p-8 flex flex-col justify-center">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-4xl">🌽</span>
+                    <h2 class="text-2xl font-bold text-gray-900">Innovative Corn and Maize Disease Detector</h2>
+                </div>
+                <p class="text-gray-600 mb-6">
+                    Our feature detects corn and maize diseases in early stages, allowing immediate action
+                    and greatly reducing harvest loss.
+                </p>
+                <a href="/corn"
+                    class="inline-flex items-center justify-center w-fit px-8 py-3 bg-yellow-500 text-white font-semibold rounded-full hover:bg-yellow-600 transition-all duration-300 transform hover:scale-105">
+                    Detect Corn Disease →
+                </a>
+            </div>
+        </div>
+
+        <!-- Cotton Card -->
+        <div class="plant-card bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col lg:flex-row">
+            <div class="lg:w-2/5">
+                <img src="{{ url_for('static', filename='assets/gautam-arora-ovdtguhupby-unsplashouck_1704366723_37412.jpg') }}"
+                    alt="Cotton" class="w-full h-64 lg:h-full object-cover">
+            </div>
+            <div class="lg:w-3/5 p-8 flex flex-col justify-center">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-4xl">🧶</span>
+                    <h2 class="text-2xl font-bold text-gray-900">Innovative Cotton Disease Detector</h2>
+                </div>
+                <p class="text-gray-600 mb-6">
+                    Our AI solution assists in detecting cotton diseases promptly, saving your crops from
+                    destructive issues and ensuring good yield.
+                </p>
+                <a href="/cotton"
+                    class="inline-flex items-center justify-center w-fit px-8 py-3 bg-gray-700 text-white font-semibold rounded-full hover:bg-gray-800 transition-all duration-300 transform hover:scale-105">
+                    Detect Cotton Disease →
+                </a>
+            </div>
+        </div>
+
+        <!-- Grape Card -->
+        <div class="plant-card bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col lg:flex-row-reverse">
+            <div class="lg:w-2/5">
+                <img src="{{ url_for('static', filename='assets/gautam-arora-ovdtguhupby-unsplash9whr_1704366838_39014.jpg') }}"
+                    alt="Grape" class="w-full h-64 lg:h-full object-cover">
+            </div>
+            <div class="lg:w-3/5 p-8 flex flex-col justify-center">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-4xl">🍇</span>
+                    <h2 class="text-2xl font-bold text-gray-900">Innovative Grape Disease Detector</h2>
+                </div>
+                <p class="text-gray-600 mb-6">
+                    Our feature detects grape diseases in early stages, allowing immediate action and
+                    greatly reducing harvest loss.
+                </p>
+                <a href="/grape"
+                    class="inline-flex items-center justify-center w-fit px-8 py-3 bg-purple-600 text-white font-semibold rounded-full hover:bg-purple-700 transition-all duration-300 transform hover:scale-105">
+                    Detect Grape Disease →
+                </a>
+            </div>
+        </div>
+
+        <!-- Potato Card -->
+        <div class="plant-card bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col lg:flex-row">
+            <div class="lg:w-2/5">
+                <img src="{{ url_for('static', filename='assets/gautam-arora-ovdtguhupby-unsplasha2le_1704366921_56524.jpg') }}"
+                    alt="Potato" class="w-full h-64 lg:h-full object-cover">
+            </div>
+            <div class="lg:w-3/5 p-8 flex flex-col justify-center">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-4xl">🥔</span>
+                    <h2 class="text-2xl font-bold text-gray-900">Efficient Potato Disease Detection</h2>
+                </div>
+                <p class="text-gray-600 mb-6">
+                    Our AI solution assists in detecting potato diseases promptly, saving your crops from
+                    destructive issues and ensuring good yield.
+                </p>
+                <a href="/potato"
+                    class="inline-flex items-center justify-center w-fit px-8 py-3 bg-amber-600 text-white font-semibold rounded-full hover:bg-amber-700 transition-all duration-300 transform hover:scale-105">
+                    Detect Potato Disease →
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <section class="py-16 bg-gradient-to-r from-secondary to-green-400">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-primary mb-6">
+                Try PlantCheck Today
+            </h2>
+            <p class="text-lg text-primary/80 mb-8">
+                Join us and ensure your garden's health. Every plant deserves the best care.
+            </p>
+            <button
+                class="px-10 py-4 bg-primary text-white font-bold text-lg rounded-full hover:bg-white hover:text-primary transition-all duration-300 transform hover:scale-105 shadow-xl">
+                Join Now
+            </button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-primary py-12">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid md:grid-cols-3 gap-8 mb-8">
+                <div>
+                    <h4 class="text-xl font-bold text-white mb-4">PlantCheck</h4>
+                    <p class="text-white/60">
+                        Helping home gardeners and professional growers prevent plant diseases.
+                    </p>
+                </div>
+                <div>
+                    <h5 class="text-white font-semibold mb-4">Quick Links</h5>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-white/60 hover:text-secondary transition-colors">About Us</a></li>
+                        <li><a href="#" class="text-white/60 hover:text-secondary transition-colors">FAQ</a></li>
+                        <li><a href="#" class="text-white/60 hover:text-secondary transition-colors">Pricing</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="text-white font-semibold mb-4">Social</h5>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-white/60 hover:text-secondary transition-colors"><i
+                                class="fab fa-twitter text-xl"></i></a>
+                        <a href="#" class="text-white/60 hover:text-secondary transition-colors"><i
+                                class="fab fa-facebook text-xl"></i></a>
+                        <a href="#" class="text-white/60 hover:text-secondary transition-colors"><i
+                                class="fab fa-instagram text-xl"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-white/10 pt-8 text-center">
+                <p class="text-white/40">©2024 PlantCheck. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // User menu toggle
+        const userMenuBtn = document.getElementById('user-menu-btn');
+        const userMenu = document.getElementById('user-menu');
+
+        userMenuBtn.addEventListener('click', () => {
+            userMenu.classList.toggle('hidden');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!userMenuBtn.contains(e.target) && !userMenu.contains(e.target)) {
+                userMenu.classList.add('hidden');
+            }
+        });
+
+        // Side navigation toggle
+        function toggleNav() {
+            var sidenav = document.getElementById("mySidenav");
+            if (sidenav.style.width === "280px") {
+                sidenav.style.width = "0";
+            } else {
+                sidenav.style.width = "280px";
+            }
+        }
+    </script>
 </body>
 
 </html>

@@ -1,1 +1,12 @@
 .venv/
+.env
+__pycache__/
+*.pyc
+*.pyo
+*.db
+*.sqlite3
+.DS_Store
+Thumbs.db
+*.log
+static/img/*.jpg
+!static/img/logo.png
