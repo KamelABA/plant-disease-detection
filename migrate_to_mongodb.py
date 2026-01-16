@@ -15,7 +15,14 @@ import os
 load_dotenv()
 
 # MongoDB Atlas Connection
-MONGODB_URI = os.getenv('MONGODB_URI', 'mongodb+srv://kamelplants:kamelplants@cluster0.76lu2yk.mongodb.net/PlantDisease?retryWrites=true&w=majority&appName=Cluster0')
+# IMPORTANT: Set MONGODB_URI in your .env file
+MONGODB_URI = os.getenv('MONGODB_URI')
+
+if not MONGODB_URI:
+    print("❌ MONGODB_URI environment variable is not set.")
+    print("Please create a .env file with your MongoDB connection string.")
+    print("See .env.example for the format.")
+    exit(1)
 
 def connect_sqlite():
     """Connect to SQLite database"""

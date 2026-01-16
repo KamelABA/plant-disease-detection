@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detection History - PlantDetect</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#21141f',
+                        secondary: '#aee36d',
+                    },
+                    fontFamily: {
+                        sans: ['Space Grotesk', 'Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo.png') }}">
+</head>
+
+<body class="min-h-screen bg-gray-50 font-sans">
+
+    <!-- Navigation -->
+    <nav class="bg-primary shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+            <a href="/" class="flex items-center space-x-3">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="h-12 w-12">
+                <span class="text-xl font-bold text-white">PlantDetect</span>
+            </a>
+            <div class="flex items-center space-x-6">
+                <a href="/" class="text-white/80 hover:text-secondary transition-colors">Home</a>
+                <a href="/leaf-detection" class="text-white/80 hover:text-secondary transition-colors">Detection</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-6xl mx-auto px-4 py-12">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Detection History</h1>
+            <p class="text-gray-600">View your previous plant disease detections</p>
+        </div>
+
+        <!-- History List -->
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+            {% if history %}
+            <div class="divide-y divide-gray-100">
+                {% for item in history %}
+                <div class="p-6 hover:bg-gray-50 transition-colors">
+                    <div class="flex items-start gap-4">
+                        <div
+                            class="w-12 h-12 bg-secondary/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-leaf text-secondary text-xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900">{{ item.DiseaseName }}</h3>
+                                    <p class="text-sm text-gray-500">{{ item.date }}</p>
+                                </div>
+                                {% if 'Healthy' in item.DiseaseName %}
+                                <span
+                                    class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">Healthy</span>
+                                {% else %}
+                                <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">Disease
+                                    Detected</span>
+                                {% endif %}
+                            </div>
+                            <p class="text-gray-600 mt-2 text-sm">{{ item.Explanation[:150] }}...</p>
+                            {% if item.Supplement %}
+                            <div class="mt-2 flex items-center gap-2 text-sm text-gray-500">
+                                <i class="fas fa-pills"></i>
+                                <span>Recommended: {{ item.Supplement }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="p-12 text-center">
+                <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-history text-gray-300 text-4xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">No Detection History</h3>
+                <p class="text-gray-500 mb-6">You haven't performed any plant disease detections yet.</p>
+                <a href="/leaf-detection"
+                    class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white font-semibold rounded-xl hover:bg-secondary hover:text-primary transition-all duration-300">
+                    <i class="fas fa-search"></i>
+                    Start Detection
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-primary py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-white/60">©2024 PlantDetect. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+
+</html>

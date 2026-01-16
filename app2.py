@@ -21,7 +21,11 @@ app = Flask(__name__, template_folder='HtmlPage')
 app.secret_key = os.getenv('SECRET_KEY', 'your_secret_key')
 
 # MongoDB Atlas Connection
-MONGODB_URI = os.getenv('MONGODB_URI', 'mongodb+srv://kamelplants:kamelplants@cluster0.76lu2yk.mongodb.net/PlantDisease?retryWrites=true&w=majority&appName=Cluster0')
+# IMPORTANT: Set MONGODB_URI in your .env file - DO NOT commit credentials to git
+MONGODB_URI = os.getenv('MONGODB_URI')
+
+if not MONGODB_URI:
+    raise ValueError("❌ MONGODB_URI environment variable is not set. Please create a .env file with your MongoDB connection string.")
 
 try:
     client = MongoClient(MONGODB_URI)

@@ -76,10 +76,18 @@ PlantDetect is an AI-powered web application that helps farmers and home gardene
    ```
 
 4. **Set up environment variables**
-   Create a `.env` file in the root directory:
+   
+   ⚠️ **IMPORTANT: Never commit credentials to git!**
+   
+   Copy the example file and fill in your values:
+   ```bash
+   cp .env.example .env
+   ```
+   
+   Edit `.env` with your credentials:
    ```env
-   MONGODB_URI=your_mongodb_connection_string
-   SECRET_KEY=your_secret_key
+   MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/database
+   SECRET_KEY=your-random-secret-key
    ```
 
 5. **Run the application**
